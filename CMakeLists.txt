@@ -68,6 +68,49 @@ endif()
 
 # Configure sources
 
+# tmxlite (vendored in ext/lib/tmxlite): parses the Tiled maps
+set(TMXLITE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/ext/lib/tmxlite")
+set(TMXLITE_SRC_DIR "${TMXLITE_ROOT}/src")
+add_library(tmxlite STATIC
+    ${TMXLITE_SRC_DIR}/FreeFuncs.cpp
+    ${TMXLITE_SRC_DIR}/ImageLayer.cpp
+    ${TMXLITE_SRC_DIR}/Map.cpp
+    ${TMXLITE_SRC_DIR}/Object.cpp
+    ${TMXLITE_SRC_DIR}/ObjectGroup.cpp
+    ${TMXLITE_SRC_DIR}/Property.cpp
+    ${TMXLITE_SRC_DIR}/TileLayer.cpp
+    ${TMXLITE_SRC_DIR}/LayerGroup.cpp
+    ${TMXLITE_SRC_DIR}/Tileset.cpp
+    ${TMXLITE_SRC_DIR}/ObjectTypes.cpp
+    ${TMXLITE_SRC_DIR}/miniz.c
+    ${TMXLITE_SRC_DIR}/detail/pugixml.cpp
+)
+target_include_directories(tmxlite SYSTEM PUBLIC "${TMXLITE_ROOT}")
+target_include_directories(tmxlite PRIVATE "${TMXLITE_SRC_DIR}")
+# same stdlib/sanitizer setup as our own targets, but without the project's warning flags
+# (MSVC refuses mixing instrumented and uninstrumented code)
+if(USE_ASAN)
+    set_custom_stdlib_and_sanitizers(tmxlite true)
+endif()
+
+# terrain collision resolver: depends on SFML only, never on Tiled
+add_library(TerrainCollisionLib STATIC
+    src/terrain/TerrainCollision.cpp
+)
+target_include_directories(TerrainCollisionLib PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_link_libraries(TerrainCollisionLib PUBLIC SFML::Graphics)
+
+# Tiled map loader: turns the Collision object layer into terrain rectangles
+add_library(TerrainMapLoaderLib STATIC
+    src/terrain/TerrainMapLoader.cpp
+)
+target_include_directories(TerrainMapLoaderLib PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_link_libraries(TerrainMapLoaderLib PUBLIC tmxlite SFML::Graphics)
+
 # always STATIC (simpler); TBD if we ever want dynamic for this; BUILD_SHARED_LIBS is for ext deps
 add_library(${MAIN_LIBRARY_NAME} STATIC)
 
@@ -77,13 +120,19 @@ add_executable(${MAIN_EXECUTABLE_NAME}
 )
 target_sources(${MAIN_LIBRARY_NAME}
     PRIVATE
-        src/Example.cpp
-        src/internal/Detail.cpp
+        src/game/Game.cpp
+        src/game/World.cpp
+        src/entities/Entity.cpp
+        src/entities/Player.cpp
+        src/entities/Enemy.cpp
+        src/entities/enemies/Spider.cpp
+        src/entities/Note.cpp
+        src/graphics/TextureHolder.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )
 # NOTE: RUN_SANITIZERS is optional, if it's not present it will default to true
-set_compiler_flags(RUN_SANITIZERS ${USE_ASAN} TARGET_NAMES ${MAIN_EXECUTABLE_NAME} ${MAIN_LIBRARY_NAME})
+set_compiler_flags(RUN_SANITIZERS ${USE_ASAN} TARGET_NAMES ${MAIN_EXECUTABLE_NAME} ${MAIN_LIBRARY_NAME} TerrainCollisionLib TerrainMapLoaderLib)
 
 ###############################################################################
 
@@ -112,6 +161,8 @@ target_include_directories(${MAIN_LIBRARY_NAME} SYSTEM PRIVATE
 ###############################################################################
 
 # Link libraries
+
+target_link_libraries(${MAIN_LIBRARY_NAME} PUBLIC TerrainCollisionLib TerrainMapLoaderLib SFML::Graphics SFML::Window SFML::System)
 
 target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE ${MAIN_LIBRARY_NAME} SFML::Graphics SFML::Window SFML::System Threads::Threads)
 
