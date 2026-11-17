@@ -34,7 +34,10 @@ env:
   LIB_DIR: "lib"
   BUILD_DIR: "build"
   EXT_DIR: "ext"
-
+  APP_WINDOW: "My Window"
+  # NOTE: also update in CMakeLists FetchContent
+  # renovate: datasource=github-tags depName=SFML/SFML versioning=loose
+  SFML_VERSION: "3.1.0"
 
 defaults:
   run:
@@ -144,26 +147,26 @@ jobs:
             runs_tests: 'ON'
 
             # renovate: depName=macos
-          - os: macos-26
+          - os: macos-15
             c: clang
             cxx: clang++
             # renovate: depName=macos
-            name: "macOS 26 Apple Clang 21"
+            name: "macOS 15 Apple Clang 17"
             # This env does not currently run address sanitizers
-            cmake_flags: "-DUSE_ASAN=OFF -DBUILD_SHARED_LIBS=ON"
+            cmake_flags: "-DUSE_ASAN=OFF -DBUILD_SHARED_LIBS=OFF -DSFML_BUILD_FRAMEWORKS=OFF -DSFML_DEPENDENCIES_INSTALL_PREFIX=$GITHUB_WORKSPACE/artifacts "
             cmake_generator: Ninja
             runs_asan: false
             runs_tests: 'ON'
 
-            # renovate: depName=macos
-          - os: macos-26
-            c: gcc-15
-            cxx: g++-15
-            # renovate: depName=macos
-            name: "macOS 26 GCC 15"
-            cmake_flags: "-DBUILD_SHARED_LIBS=OFF"
-            cmake_generator: Ninja
-            runs_tests: 'ON'
+          #   # renovate: depName=macos
+          # - os: macos-26
+          #   c: gcc-15
+          #   cxx: g++-15
+          #   # renovate: depName=macos
+          #   name: "macOS 26 GCC 15"
+          #   cmake_flags: "-DBUILD_SHARED_LIBS=OFF"
+          #   cmake_generator: Ninja
+          #   runs_tests: 'ON'
 
             # renovate: depName=windows
           - os: windows-2025
@@ -171,11 +174,11 @@ jobs:
             cxx: cl
             # renovate: depName=windows
             name: "ASan: Windows 2025 MSVC 19.51"
-            cmake_flags: "-DUSE_ASAN=ON -DBUILD_SHARED_LIBS=OFF"
+            cmake_flags: "-DUSE_ASAN=ON -DBUILD_SHARED_LIBS=ON"
             # Ninja is not faster on MSVC because... MSVC
             # cmake_generator: "Ninja"
             # cmake_generator: "Ninja Multi-Config"
-            # This env runs address sanitizers
+            # This env currently runs address sanitizers only for tests
             runs_asan: true
             runs_tests: 'ON'
 

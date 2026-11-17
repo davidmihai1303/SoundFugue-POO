@@ -106,6 +106,13 @@ Proiectul este configurat cu CMake.
 
 Instrucțiuni pentru terminal:
 
+0. Biblioteci necesare pe Linux (ar trebui să meargă pe sisteme bazate pe Debian/Arch/Fedora/OpenSUSE, necesită `sudo`)
+```sh
+bash ./scripts/install-linux-deps.sh
+```
+
+Dacă lipsesc și alte biblioteci, ștergeți folder-ul de build de la pasul 1 și reconfigurați proiectul după ce ați instalat ce lipsea.
+
 1. Pasul de configurare
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
@@ -205,5 +212,6 @@ The project is licensed under [AGPLv3](LICENSE).
 The [template repository](https://github.com/mcmarius/oop-template) itself is licensed under [Unlicense](LICENSE.template).
 
 ## Resurse
-
+<!-- renovate: datasource=github-tags depName=SFML/SFML versioning=loose -->
+- [SFML](https://github.com/SFML/SFML/tree/3.1.0) (Zlib)
 - adăugați trimiteri **detaliate** către resursele externe care v-au ajutat sau pe care le-ați folosit
