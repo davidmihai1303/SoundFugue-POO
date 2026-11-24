@@ -6,15 +6,10 @@
 #include "graphics/SfmlOutput.hpp"
 #include <iostream>
 
-TextureHolder::TextureHolder(const std::string& path) {
-    m_texture = new sf::Texture();
-    if (!m_texture->loadFromFile(path)) {
+TextureHolder::TextureHolder(const std::string& path) : m_texture(std::make_unique<sf::Texture>()) {
+    if (!(*m_texture).loadFromFile(path)) {
         std::cerr << "Error: couldn't load texture at " << path << "\n";
     }
-}
-
-TextureHolder::~TextureHolder() {
-    delete m_texture;
 }
 
 sf::Texture& TextureHolder::get() const {

@@ -5,6 +5,7 @@
 #ifndef SOUNDFUGUE_TEXTUREHOLDER_HPP
 #define SOUNDFUGUE_TEXTUREHOLDER_HPP
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -13,8 +14,6 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const TextureHolder& holder);
 
     explicit TextureHolder(const std::string& path);
-
-    ~TextureHolder();
 
     // Forbid copying textures. Only copy by reference
     TextureHolder(const TextureHolder&) = delete;
@@ -25,7 +24,7 @@ public:
     [[nodiscard]] sf::Texture& get() const;
 
 private:
-    sf::Texture* m_texture;
+    std::unique_ptr<sf::Texture> m_texture;
 };
 
 #endif //SOUNDFUGUE_TEXTUREHOLDER_HPP

@@ -23,14 +23,7 @@ public:
 
     void attackingLogic() override;
 
-    //TODO ??
-    sf::FloatRect getPlayerDimensions() const;
-
-    void attack();
-
     void setInputState(const InputState& inputState);
-
-    void resetDash();
 
     void setPosition(const sf::Vector2f& position) override;
 
@@ -86,9 +79,12 @@ private:
     int m_attacking_numFrames;
     // ---------------------------
 
+    void print(std::ostream& os) const override;
+    void attack();
+    void resetDash();
+
     // Ends the current attack: stops its timer, releases an airborne freeze with zero velocity and clears the dash.
     // Leaves the cooldown and dash availability (m_hasDashed) unchanged.
-    void print(std::ostream& os) const override;
     void cancelAttack();
 
     void animationLogic(sf::Time dt);

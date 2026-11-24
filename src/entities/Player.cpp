@@ -428,10 +428,6 @@ sf::FloatRect Player::getAttackingBounds() const {
     return attackingShape.getGlobalBounds();
 }
 
-sf::FloatRect Player::getPlayerDimensions() const {
-    return m_shape.getLocalBounds();
-}
-
 void Player::resetDash() {
     m_hasDashed = false;
 }

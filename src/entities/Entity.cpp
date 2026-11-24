@@ -19,20 +19,12 @@ bool Entity::getAttackingState() const {
     return m_isAttacking;
 }
 
-sf::Vector2f Entity::getVelocity() const {
-    return m_velocity;
-}
-
 sf::FloatRect Entity::getBounds() const {
     return m_shape.getGlobalBounds();
 }
 
 void Entity::setPosition(const sf::Vector2f& position) {
     m_shape.setPosition(position);
-}
-
-void Entity::setVelocity(const sf::Vector2f& velocity) {
-    m_velocity = velocity;
 }
 
 TerrainMove Entity::resolveTerrainMovement(const sf::FloatRect& body, const TerrainCollision& terrain, const sf::Vector2f& displacement) {

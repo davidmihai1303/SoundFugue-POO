@@ -33,10 +33,6 @@ public:
 
     [[nodiscard]] bool getAttackingState() const;
 
-    [[nodiscard]] sf::Vector2f getVelocity() const;
-
-    void setVelocity(const sf::Vector2f& velocity);
-
 protected:
     sf::RectangleShape m_shape;
     sf::Vector2f m_velocity;

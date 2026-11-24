@@ -30,8 +30,6 @@ public:
 
     sf::Vector2f getPlayerPosition() const;
 
-    void playerAttack();
-
 private:
     void handleCollisions();
 

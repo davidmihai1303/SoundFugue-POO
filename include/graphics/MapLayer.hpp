@@ -44,17 +44,17 @@ public:
     }
 
     // Change a tile dynamically during gameplay
-    void setTile(std::uint32_t x, std::uint32_t y, tmx::TileLayer::Tile newTile) {
-        if (x >= m_mapSize.x || y >= m_mapSize.y)
-            return;
-
-        const std::size_t idx = y * m_mapSize.x + x;
-        m_tileIDs[idx] = newTile;
-
-        // Because we don't have chunks, changing ONE tile means
-        // we have to rebuild the entire map's geometry!
-        generateGeometry();
-    }
+    // void setTile(std::uint32_t x, std::uint32_t y, tmx::TileLayer::Tile newTile) {
+    //     if (x >= m_mapSize.x || y >= m_mapSize.y)
+    //         return;
+    //
+    //     const std::size_t idx = y * m_mapSize.x + x;
+    //     m_tileIDs[idx] = newTile;
+    //
+    //     // Because we don't have chunks, changing ONE tile means
+    //     // we have to rebuild the entire map's geometry!
+    //     generateGeometry();
+    // }
 
     // Update animations
     void update(sf::Time elapsed) {
