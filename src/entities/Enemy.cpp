@@ -45,10 +45,3 @@ void Enemy::attackingLogic() {
 void Enemy::setColor(const sf::Color colour) {
     m_shape.setFillColor(colour);
 }
-
-// std::ostream& operator<<(std::ostream& os, const Enemy& e) {
-//     os << "Enemy{";
-//     os << static_cast<const Entity&>(e);
-//     os << "}";
-//     return os;
-// }

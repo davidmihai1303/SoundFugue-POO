@@ -19,6 +19,7 @@ public:
 protected:
     void animationLogic(sf::Time dt) override;
     void contactLogic(const TerrainContacts& contacts) override;
+    void print(std::ostream& os) const override;
 
 private:
     sf::Sprite m_walkingSprite;

@@ -5,11 +5,14 @@
 #ifndef SOUNDFUGUE_GAME_HPP
 #define SOUNDFUGUE_GAME_HPP
 #include <SFML/Graphics.hpp>
+#include <ostream>
 #include "game/World.hpp"
 #include "game/InputState.hpp"
 
 class Game {
 public:
+    friend std::ostream& operator<<(std::ostream& os, const Game& g);
+
     Game();
 
     void run();

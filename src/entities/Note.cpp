@@ -3,6 +3,7 @@
 //
 
 #include "entities/Note.hpp"
+#include "graphics/SfmlOutput.hpp"
 
 Note::Note(const sf::Vector2f& position) {
     m_shape.setSize(sf::Vector2f(20.f, 20.f));
@@ -34,9 +35,7 @@ sf::FloatRect Note::getBounds() const {
     return m_shape.getGlobalBounds();
 }
 
-// std::ostream& operator<<(std::ostream& os, const Note& n) {
-// const sf::FloatRect bounds = n.getBounds();
-// os << "Note(size: " << bounds.size.x << "x" << bounds.size.y
-//    << ", pos: " << bounds.position.x << ", " << bounds.position.y << ")";
-//     return os;
-// }
+std::ostream& operator<<(std::ostream& os, const Note& n) {
+    os << "Note{bounds " << n.getBounds() << "}";
+    return os;
+}

@@ -1,5 +1,6 @@
 #include "terrain/TerrainCollision.hpp"
 #include "game/Constants.hpp"
+#include "graphics/SfmlOutput.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -233,3 +234,11 @@ const std::vector<sf::FloatRect>& TerrainCollision::getSolids() const {
 }
 
 TerrainCollision::~TerrainCollision() = default;
+
+std::ostream& operator<<(std::ostream& os, const TerrainCollision& terrain) {
+    os << "TerrainCollision{" << terrain.m_solids.size() << " solids";
+    for (const sf::FloatRect& solid : terrain.m_solids)
+        os << ", " << solid;
+    os << "}";
+    return os;
+}

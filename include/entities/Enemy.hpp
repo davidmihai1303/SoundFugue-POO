@@ -12,7 +12,6 @@
 // Shared base for every regular enemy. It owns the order a frame runs in; each concrete enemy supplies its own intended movement and its own animations. Abstract: movementLogic() and draw() stay pure virtual from Entity, and animationLogic() is added below.
 class Enemy : public Entity {
 public:
-    friend std::ostream& operator<<(std::ostream& os, const Enemy& e);
 
     // The frame order every enemy shares: decide intended movement, advance animations, then record this frame's facing for the next one.
     void update(sf::Time dt, const TerrainCollision& terrain) override;

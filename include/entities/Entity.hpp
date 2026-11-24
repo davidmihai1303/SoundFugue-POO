@@ -6,6 +6,7 @@
 #define SOUNDFUGUE_ENTITY_HPP
 
 #include <SFML/Graphics.hpp>
+#include <ostream>
 #include "terrain/TerrainCollision.hpp"
 
 class Entity {
@@ -54,6 +55,9 @@ protected:
     // Enemy default = False / Left (this will be revised. Code=3)
     bool m_currentFacingDirection;
     bool m_lastFacingDirection;
+
+    // Prints the state shared by every entity. Derived classes override it, print their own type and call the base version for this part.
+    virtual void print(std::ostream& os) const;
 
     TerrainMove resolveTerrainMovement(const sf::FloatRect& body, const TerrainCollision& terrain, const sf::Vector2f& displacement);
 };

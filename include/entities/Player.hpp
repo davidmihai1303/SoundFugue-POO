@@ -12,7 +12,6 @@
 
 class Player final : public Entity {
 public:
-    friend std::ostream& operator<<(std::ostream& os, const Player& p);
 
     explicit Player(const sf::Texture& standingTexture, const sf::Texture& walkingTexture, const sf::Texture& attackingTexture);
 
@@ -89,6 +88,7 @@ private:
 
     // Ends the current attack: stops its timer, releases an airborne freeze with zero velocity and clears the dash.
     // Leaves the cooldown and dash availability (m_hasDashed) unchanged.
+    void print(std::ostream& os) const override;
     void cancelAttack();
 
     void animationLogic(sf::Time dt);

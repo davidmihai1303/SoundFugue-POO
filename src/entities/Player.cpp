@@ -438,12 +438,9 @@ void Player::resetDash() {
 
 // -------
 
-// std::ostream &operator<<(std::ostream &os, const Player &p) {
-//     os << "Player{";
-//     os << static_cast<const Entity &>(p); // apelează operatorul din Entity
-//     os << ", attacking=" << (p.m_isAttacking ? "true" : "false");
-//     os << ", sprite= " << p.m_standingSprite.getLocalBounds().size.x << ", " << p.m_standingSprite.getLocalBounds().size
-//             .y;
-//     os << "}";
-//     return os;
-// }
+void Player::print(std::ostream& os) const {
+    const char* animationName = m_animationToDraw == 0 ? "standing" : (m_animationToDraw == 1 ? "walking" : "attacking");
+    os << "Player{";
+    Entity::print(os);
+    os << ", frozen " << (m_isFrozen ? "yes" : "no") << ", dash attack " << (m_dashAttack ? "yes" : "no") << ", dash used " << (m_hasDashed ? "yes" : "no") << ", animation " << animationName << "}";
+}

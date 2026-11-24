@@ -71,3 +71,9 @@ void Spider::draw(sf::RenderTarget& target) const {
     target.draw(m_shape);
     target.draw(m_walkingSprite);
 }
+
+void Spider::print(std::ostream& os) const {
+    os << "Spider{";
+    Enemy::print(os);
+    os << ", walking frame " << m_walking_currentFrame + 1 << "/" << m_walking_numFrames << "}";
+}

@@ -6,6 +6,7 @@
 #define SOUNDFUGUE_NOTE_HPP
 
 #include <SFML/Graphics.hpp>
+#include <ostream>
 
 class Note {
 public:

@@ -151,12 +151,19 @@ void World::addNotes() {
     for (auto& pos : positions)
         m_notes.push_back(std::make_unique<Note>(pos));
 }
-//
-// std::ostream &operator<<(std::ostream &os, const World &w) {
-//     os << "World:\n";
-//     os << " Player -> " << *w.m_player << "\n";
-//     for (const auto &e: w.m_entities)
-//         if (e.get() != w.m_player)
-//             os << " Enemy -> " << *e << "\n";
-//     return os;
-// }
+
+std::ostream& operator<<(std::ostream& os, const World& w) {
+    os << "World{\n";
+    os << "  terrain: " << w.m_terrain << "\n";
+    os << "  entities (" << w.m_entities.size() << "):\n";
+    for (const std::unique_ptr<Entity>& e : w.m_entities)
+        os << "    " << *e << "\n";
+    os << "  notes (" << w.m_notes.size() << "):\n";
+    for (const std::unique_ptr<Note>& n : w.m_notes)
+        os << "    " << *n << "\n";
+    os << "  textures: player standing " << w.m_playerStandingTexture << ", player walking " << w.m_playerWalkingTexture << ", player attacking " << w.m_playerAttackingTexture
+       << ", spider walking " << w.m_spiderWalkingTexture << "\n";
+    os << "  map layers: " << w.m_mapLayers.size() << "\n";
+    os << "}";
+    return os;
+}

@@ -3,6 +3,7 @@
 //
 
 #include "graphics/TextureHolder.hpp"
+#include "graphics/SfmlOutput.hpp"
 #include <iostream>
 
 TextureHolder::TextureHolder(const std::string& path) {
@@ -21,4 +22,9 @@ sf::Texture& TextureHolder::get() const {
         throw std::runtime_error("Texture not loaded!");
     }
     return *m_texture;
+}
+
+std::ostream& operator<<(std::ostream& os, const TextureHolder& holder) {
+    os << "TextureHolder{size " << (*holder.m_texture).getSize() << "}";
+    return os;
 }

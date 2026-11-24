@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cmath>
 #include "game/Constants.hpp"
+#include "graphics/SfmlOutput.hpp"
 #include <tmxlite/Map.hpp>
 
 Game::Game()
@@ -37,7 +38,6 @@ void Game::run() {
         m_window.clear();
         m_world.draw();
         m_window.display();
-        //        std::cout << m_world;
 
         frameCounter++;
 
@@ -71,6 +71,9 @@ void Game::processEvents() {
                 // if mouse already down, mouse came first
                 if (m_inputState.clickDown && m_inputState.firstPressed == '0')
                     m_inputState.firstPressed = 'c';
+            } else if (key->scancode == sf::Keyboard::Scan::F1) {
+                // Debug: print the current state of the whole game to the console
+                std::cout << *this << std::endl;
             }
         } else if (auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
             if (keyReleased->scancode == sf::Keyboard::Scan::LShift)
@@ -129,4 +132,9 @@ void Game::updateCamera(const sf::Time dt) {
     const float smoothing = 1.0f - frameDamping;
 
     m_view.setCenter(currentCenter + (target - currentCenter) * smoothing);
+}
+
+std::ostream& operator<<(std::ostream& os, const Game& g) {
+    os << "Game{window " << g.m_window.getSize() << ", camera center " << g.m_view.getCenter() << "}\n" << g.m_world;
+    return os;
 }

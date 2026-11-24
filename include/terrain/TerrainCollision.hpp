@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/Rect.hpp>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,8 @@
 // Stores the map's solid rectangles and resolves an actor body's requested movement against them.
 class TerrainCollision {
 public:
+    friend std::ostream& operator<<(std::ostream& os, const TerrainCollision& terrain);
+
     // Takes ownership of the supplied terrain rectangles and validates them.
     explicit TerrainCollision(std::vector<sf::FloatRect> solids);
     ~TerrainCollision();

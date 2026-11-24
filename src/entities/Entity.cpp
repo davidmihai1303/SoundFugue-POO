@@ -3,6 +3,7 @@
 //
 
 #include "entities/Entity.hpp"
+#include "graphics/SfmlOutput.hpp"
 
 Entity::Entity() : m_velocity(0.f, 0.f), m_movement(0.f, 0.f), m_isMoving(false), m_onGround(false), m_isAttacking(false), m_currentFacingDirection(false) {
     // Set the clocks on stop and time=0 by default
@@ -40,8 +41,13 @@ TerrainMove Entity::resolveTerrainMovement(const sf::FloatRect& body, const Terr
     return moved;
 }
 
-// std::ostream &operator<<(std::ostream &os, const Entity &e) {
-//     os << "Entity(pos: " << e.m_shape.getGlobalBounds().position.x << ", " << e.m_shape.getGlobalBounds().position.y
-//             << ", vel: " << e.m_velocity.x << ", " << e.m_velocity.y << ")";
-//     return os;
-// }
+// Non-virtual interface: the stream operator forwards to the virtual print(), so an entity held through an Entity pointer prints as its real type.
+std::ostream& operator<<(std::ostream& os, const Entity& e) {
+    e.print(os);
+    return os;
+}
+
+void Entity::print(std::ostream& os) const {
+    os << "position " << getPosition() << ", velocity " << m_velocity << ", facing " << (m_currentFacingDirection ? "right" : "left") << ", on ground " << (m_onGround ? "yes" : "no")
+       << ", attacking " << (m_isAttacking ? "yes" : "no");
+}
