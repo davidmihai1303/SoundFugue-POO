@@ -14,15 +14,6 @@ public:
 
     explicit Note(const sf::Vector2f& position);
 
-    // Constructor de copiere
-    Note(const Note& other);
-
-    // Operator= de copiere
-    Note& operator=(const Note& other);
-
-    // Destructor
-    ~Note();
-
     void draw(sf::RenderTarget& target) const;
 
     sf::FloatRect getBounds() const;
