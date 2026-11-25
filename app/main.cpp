@@ -25,10 +25,17 @@
 
 #include "game/Game.hpp"
 #include <iostream>
+#include <stdexcept>
 
 int main() {
-    // Debug output (F1) goes to the console
-    Game game(std::cout);
-    game.run();
+    try {
+        // Debug output (F1) goes to the console
+        Game game(std::cout);
+        game.run();
+    } catch (const std::runtime_error& error) {
+        // A missing resource stops the game with a clear message instead of starting it half-loaded
+        std::cerr << "SoundFugue could not start: " << error.what() << '\n';
+        return 1;
+    }
     return 0;
 }

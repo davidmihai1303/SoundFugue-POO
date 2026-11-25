@@ -4,11 +4,12 @@
 
 #include "graphics/TextureHolder.hpp"
 #include "graphics/SfmlOutput.hpp"
-#include <iostream>
+#include <stdexcept>
 
 TextureHolder::TextureHolder(const std::string& path) : m_texture(std::make_unique<sf::Texture>()) {
+    // A holder without its texture would only draw invisible sprites, so it must not exist at all
     if (!(*m_texture).loadFromFile(path)) {
-        std::cerr << "Error: couldn't load texture at " << path << "\n";
+        throw std::runtime_error("Couldn't load texture at " + path);
     }
 }
 
