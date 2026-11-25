@@ -87,14 +87,14 @@ O cerință nu se consideră îndeplinită dacă este realizată doar prin cod g
 - [x] cât mai multe `const` (unde este cazul) și funcții `private`
 - [x] implementarea a minim 3 funcții membru publice pentru funcționalități netriviale specifice temei alese, dintre care cel puțin 1-2 funcții mai complexe
   - nu doar citiri/afișări sau adăugat/șters elemente într-un/dintr-un vector
-- [ ] scenariu de utilizare **cu sens** a claselor definite:
+- [x] scenariu de utilizare **cu sens** a claselor definite:
   - crearea de obiecte și apelarea tuturor funcțiilor membru publice în main
   - vor fi adăugate în fișierul `tastatura.txt` DOAR exemple de date de intrare de la tastatură (dacă există) pentru a acoperi cât mai multe cazuri; dacă aveți nevoie de date din fișiere, creați alte fișiere separat
-- [ ] minim 52-60% din codul propriu să fie C++, adică să aveți mai mult cod decât ce e inclus în template; testele nu se pun, nu vă luați după procentajul din interfața web; detalii la ore
+- [x] minim 52-60% din codul propriu să fie C++, adică să aveți mai mult cod decât ce e inclus în template; testele nu se pun, nu vă luați după procentajul din interfața web; detalii la ore
 - [x] `.gitattributes` configurat corect (nu trebuie făcute modificări aici)
-- [ ] tag de `git`: de exemplu `v0.1`
-- [ ] serviciu de integrare continuă (CI) cu **toate bifele**; exemplu: GitHub Actions
-- [ ] code review #1 2 proiecte
+- [x] tag de `git`: de exemplu `v0.1`
+- [x] serviciu de integrare continuă (CI) cu **toate bifele**; exemplu: GitHub Actions
+- [x] code review #1 2 proiecte
 
 ## Tema 2
 
@@ -253,4 +253,5 @@ The [template repository](https://github.com/mcmarius/oop-template) itself is li
 ## Resurse
 <!-- renovate: datasource=github-tags depName=SFML/SFML versioning=loose -->
 - [SFML](https://github.com/SFML/SFML/tree/3.1.0) (Zlib)
+- [tmxlite](https://github.com/fallahn/tmxlite/tree/4e8782068c10e371c55a4717973e117d62f6201d) (Zlib), vendorizat în `ext/lib/tmxlite`, de la commit-ul `4e87820` (ianuarie 2026, între v1.4.4 și v1.4.5); include [pugixml](https://pugixml.org/) 1.7 (MIT) și miniz 1.15 (public domain)
 - adăugați trimiteri **detaliate** către resursele externe care v-au ajutat sau pe care le-ați folosit

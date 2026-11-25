@@ -38,10 +38,10 @@ inline constexpr float SprintMultiplier = 1.71f; //TODO experiment with other va
 // Hitbox
 inline constexpr float HitboxWidth = 50.f;
 inline constexpr float HitboxHeight = 100.f;
-inline sf::Color HitboxColor = sf::Color::Transparent;
+inline constexpr sf::Color HitboxColor = sf::Color::Transparent;
 inline constexpr float AttackingHitboxWidth = 40.f;
 inline constexpr float AttackingHitboxHeight = 65.f;
-inline sf::Color AttackingHitboxColor = sf::Color::Transparent;
+inline constexpr sf::Color AttackingHitboxColor = sf::Color::Transparent;
 
 // Combat
 inline constexpr float AttackCooldown = 0.36f;

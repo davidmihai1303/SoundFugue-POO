@@ -3,14 +3,13 @@
 //
 
 #include "game/Game.hpp"
-#include <iostream>
 #include <cmath>
 #include "game/Constants.hpp"
 #include "graphics/SfmlOutput.hpp"
 #include <tmxlite/Map.hpp>
 
-Game::Game()
-    : m_window(sf::VideoMode({1920, 1080}), "SoundFugue"), m_view({Constants::Window::ViewCenterX, Constants::Window::ViewCenterY}, {Constants::Window::Width, Constants::Window::Height}),
+Game::Game(std::ostream& debugOutput)
+    : m_debugOutput(debugOutput), m_window(sf::VideoMode({1920, 1080}), "SoundFugue"), m_view({Constants::Window::ViewCenterX, Constants::Window::ViewCenterY}, {Constants::Window::Width, Constants::Window::Height}),
       m_world(m_window) {}
 
 void Game::run() {
@@ -72,8 +71,8 @@ void Game::processEvents() {
                 if (m_inputState.clickDown && m_inputState.firstPressed == '0')
                     m_inputState.firstPressed = 'c';
             } else if (key->scancode == sf::Keyboard::Scan::F1) {
-                // Debug: print the current state of the whole game to the console
-                std::cout << *this << std::endl;
+                // Debug: print the current state of the whole game to the debug output chosen by the application
+                m_debugOutput << *this << std::endl;
             }
         } else if (auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
             if (keyReleased->scancode == sf::Keyboard::Scan::LShift)

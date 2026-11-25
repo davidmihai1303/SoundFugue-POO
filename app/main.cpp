@@ -24,9 +24,11 @@
 //TODO throw errors if player is not found inside the World class
 
 #include "game/Game.hpp"
+#include <iostream>
 
 int main() {
-    Game game;
+    // Debug output (F1) goes to the console
+    Game game(std::cout);
     game.run();
     return 0;
 }
