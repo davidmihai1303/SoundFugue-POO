@@ -113,7 +113,7 @@ private:
     std::vector<std::unique_ptr<TextureLayer>> m_textureLayers;
 
     struct AnimationState {
-        std::size_t mapIndex;
+        std::size_t mapIndex = 0;
         sf::Time currentTime;
         tmx::Tileset::Tile animTile;
     };

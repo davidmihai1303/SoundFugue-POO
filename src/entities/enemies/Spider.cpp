@@ -17,7 +17,7 @@ Spider::Spider(const sf::Vector2f& position, const sf::Vector2f& size, const sf:
         m_walkingSprite.setScale({-1.f * m_walkingSprite.getScale().x, m_walkingSprite.getScale().y});
 }
 
-sf::Vector2f Spider::movementLogic(const sf::Time dt, bool hasGroundSupport) {
+sf::Vector2f Spider::movementLogic(const sf::Time dt, [[maybe_unused]] bool hasGroundSupport) {
     m_movement = {0.f, 0.f};
     // As long as there is no horizontal collision, the spider just moves , otherwise it changes direction
     if (m_currentFacingDirection) {

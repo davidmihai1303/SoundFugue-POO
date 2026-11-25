@@ -67,7 +67,8 @@ bool expectInvalidTerrain(const char* scenario, const sf::FloatRect& solid) {
 bool expectInvalidMovement(const char* scenario, const TerrainCollision& terrain, const sf::FloatRect& body, const sf::Vector2f displacement, const char* expectedMessage = nullptr) {
     // Bad body data, bad displacement, and initial penetration must all be rejected.
     try {
-        terrain.resolveMovement(body, displacement);
+        // Only the exception matters here, so the returned movement is deliberately discarded.
+        static_cast<void>(terrain.resolveMovement(body, displacement));
     } catch (const std::invalid_argument& error) {
         // For overlaps, verify that the error identifies the solid without depending on its full wording.
         if (expectedMessage != nullptr) {

@@ -79,6 +79,7 @@ void validateTerrainObject(const tmx::Object& object) {
 }
 } // namespace
 
+// cppcheck-suppress unusedFunction ; used by World from Step 11 of the map loader guide
 std::vector<sf::FloatRect> loadTerrainRectangles(const tmx::Map& map) {
     const tmx::ObjectGroup& collisionLayer = findCollisionLayer(map);
 
