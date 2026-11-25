@@ -187,6 +187,14 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
         PATTERN "*.h"
         PATTERN "*.hpp"
 )
+# liboop.a depends on these, and the public headers include <tmxlite/...>: ship them so the library can be used on its own
+install(TARGETS TerrainCollisionLib TerrainMapLoaderLib tmxlite ARCHIVE DESTINATION lib)
+install(DIRECTORY ${TMXLITE_ROOT}/tmxlite/
+    DESTINATION include/tmxlite
+    FILES_MATCHING
+        PATTERN "*.hpp"
+        PATTERN "*.inl"
+)
 if(APPLE)
     install(FILES ${CMAKE_SOURCE_DIR}/launcher.command DESTINATION ${DESTINATION_DIR})
 endif()
