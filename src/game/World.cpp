@@ -12,7 +12,8 @@ World::World(sf::RenderWindow& window)
                             {{-400.f, 500.f}, {50.f, 50.f}},
                         }),
       m_playerStandingTexture("assets/sprites/aeris_standing_animation_spritesheet.png"), m_playerWalkingTexture("assets/sprites/aeris_walking_animation_spritesheet.png"),
-      m_playerAttackingTexture("assets/sprites/aeris_attacking_animation_spritesheet.png"), m_spiderWalkingTexture("assets/sprites/spider_walking_animation_spritesheet.png") {
+      m_playerAttackingTexture("assets/sprites/aeris_attacking_animation_spritesheet.png"), m_spiderWalkingTexture("assets/sprites/spider_walking_animation_spritesheet.png"),
+      m_spiderWalkingAnimation(m_spiderWalkingTexture.get().getSize(), Constants::Spider::Animation::WalkingFrameCount, Constants::Spider::Animation::WalkingAnimDuration) {
     if (m_map.load("assets/maps/untitled.tmx")) {
         const auto& layers = m_map.getLayers();
 
@@ -29,7 +30,7 @@ World::World(sf::RenderWindow& window)
     m_player = dynamic_cast<Player*>(m_entities.back().get()); // We keep a raw pointer to access Player faster
 
     // Create an enemy
-    auto enemy = std::make_unique<Spider>(sf::Vector2f{400.f, 500.f}, sf::Vector2f{Constants::Spider::HitboxWidth, Constants::Spider::HitboxHeight}, m_spiderWalkingTexture.get());
+    auto enemy = std::make_unique<Spider>(sf::Vector2f{400.f, 500.f}, sf::Vector2f{Constants::Spider::HitboxWidth, Constants::Spider::HitboxHeight}, m_spiderWalkingTexture.get(), m_spiderWalkingAnimation);
     m_entities.push_back(std::move(enemy));
 
     // Being unique pointers, enemy and player will be automatically deleted after the constructor is finished
@@ -163,6 +164,7 @@ std::ostream& operator<<(std::ostream& os, const World& w) {
         os << "    " << *n << "\n";
     os << "  textures: player standing " << w.m_playerStandingTexture << ", player walking " << w.m_playerWalkingTexture << ", player attacking " << w.m_playerAttackingTexture
        << ", spider walking " << w.m_spiderWalkingTexture << "\n";
+    os << "  spider walking animation (model): " << w.m_spiderWalkingAnimation << "\n";
     os << "  map layers: " << w.m_mapLayers.size() << "\n";
     os << "}";
     return os;

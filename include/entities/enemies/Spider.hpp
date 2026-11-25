@@ -7,10 +7,12 @@
 
 #include <SFML/Graphics.hpp>
 #include "entities/Enemy.hpp"
+#include "graphics/Animation.hpp"
 
 class Spider final : public Enemy {
 public:
-    Spider(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Texture& walkingTexture);
+    // walkingAnimation is copied: every spider starts its walk from the first frame
+    Spider(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Texture& walkingTexture, const Animation& walkingAnimation);
 
     void draw(sf::RenderTarget& target) const override;
 
@@ -23,14 +25,7 @@ protected:
 
 private:
     sf::Sprite m_walkingSprite;
-
-    int m_walking_currentFrame;
-    float m_walking_animDuration;
-    float m_walking_elapsedTime;
-    sf::Vector2u m_walking_frameSize;
-    int m_walking_numFrames;
-
-    void walkingAnimation(sf::Time dt);
+    Animation m_walkingAnimation;
 };
 
 #endif //SOUNDFUGUE_SPIDER_HPP

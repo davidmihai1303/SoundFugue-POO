@@ -12,6 +12,7 @@
 #include "entities/Entity.hpp"
 #include "entities/Note.hpp"
 #include "game/InputState.hpp"
+#include "graphics/Animation.hpp"
 #include "graphics/TextureHolder.hpp"
 #include <ostream>
 #include <tmxlite/Map.hpp>
@@ -65,6 +66,8 @@ private:
     // --- Enemy textures:
 
     TextureHolder m_spiderWalkingTexture;
+    // Configured once from the texture; every spider gets its own copy
+    Animation m_spiderWalkingAnimation;
 
     // -----------
 

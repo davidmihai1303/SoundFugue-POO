@@ -9,6 +9,7 @@
 #include "entities/Entity.hpp"
 #include "game/InputState.hpp"
 #include "game/Constants.hpp"
+#include "graphics/Animation.hpp"
 
 class Player final : public Entity {
 public:
@@ -60,23 +61,13 @@ private:
     // --- Animation Variables ---
     unsigned int m_animationToDraw; // What animation to draw on screen: 0 - standing, 1 - walking, 2 - attack
 
-    int m_standing_currentFrame;       // Current frame index (starting from 0)
-    float m_standing_animDuration;     // How long one frame stays on screen (in seconds)
-    float m_standing_elapsedTime;      // Timer
-    sf::Vector2u m_standing_frameSize; // Width and Height of a single frame
-    int m_standing_numFrames;          // Total frames in spritesheet
+    // Configured once in the constructor and never played: switching to an animation copies it into m_activeAnimation
+    Animation m_standingAnimation;
+    Animation m_walkingAnimation;
+    Animation m_attackingAnimation;
 
-    int m_walking_currentFrame;
-    float m_walking_animDuration;
-    float m_walking_elapsedTime;
-    sf::Vector2u m_walking_frameSize;
-    int m_walking_numFrames;
-
-    int m_attacking_currentFrame;
-    float m_attacking_animDuration;
-    float m_attacking_elapsedTime;
-    sf::Vector2u m_attacking_frameSize;
-    int m_attacking_numFrames;
+    // The animation currently playing, on the sprite chosen by m_animationToDraw
+    Animation m_activeAnimation;
     // ---------------------------
 
     void print(std::ostream& os) const override;
@@ -88,9 +79,6 @@ private:
     void cancelAttack();
 
     void animationLogic(sf::Time dt);
-    void standingAnimation(sf::Time dt);
-    void walkingAnimation(sf::Time dt);
-    void attackingAnimation(sf::Time dt);
 };
 
 #endif //SOUNDFUGUE_PLAYER_HPP

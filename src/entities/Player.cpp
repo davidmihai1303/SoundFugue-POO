@@ -15,14 +15,10 @@ Player::Player(const sf::Texture& standingTexture, const sf::Texture& walkingTex
       // --- Animations
       m_animationToDraw(0),
 
-      m_standing_currentFrame(0), m_standing_animDuration(Constants::Player::Animation::StandingAnimDuration), m_standing_elapsedTime(0.f),
-      m_standing_numFrames(Constants::Player::Animation::StandingFrameCount),
-
-      m_walking_currentFrame(0), m_walking_animDuration(Constants::Player::Animation::WalkingAnimDuration), m_walking_elapsedTime(0.f),
-      m_walking_numFrames(Constants::Player::Animation::WalkingFrameCount),
-
-      m_attacking_currentFrame(0), m_attacking_animDuration(Constants::Player::Animation::AttackingAnimDuration), m_attacking_elapsedTime(0.f),
-      m_attacking_numFrames(Constants::Player::Animation::AttackingFrameCount) {
+      m_standingAnimation(standingTexture.getSize(), Constants::Player::Animation::StandingFrameCount, Constants::Player::Animation::StandingAnimDuration),
+      m_walkingAnimation(walkingTexture.getSize(), Constants::Player::Animation::WalkingFrameCount, Constants::Player::Animation::WalkingAnimDuration),
+      m_attackingAnimation(attackingTexture.getSize(), Constants::Player::Animation::AttackingFrameCount, Constants::Player::Animation::AttackingAnimDuration),
+      m_activeAnimation(m_standingAnimation) {
     // Create the player's hitbox
     m_shape.setSize(sf::Vector2f({Constants::Player::HitboxWidth, Constants::Player::HitboxHeight}));
     m_shape.setFillColor(Constants::Player::HitboxColor);
@@ -30,26 +26,22 @@ Player::Player(const sf::Texture& standingTexture, const sf::Texture& walkingTex
     m_currentFacingDirection = true; // Different from all the other entities (enemies)
     m_lastFacingDirection = true;
 
+    // Every sprite starts on the first frame of its animation
+    const sf::IntRect standingFrame = m_standingAnimation.currentFrameRect();
+    const sf::IntRect walkingFrame = m_walkingAnimation.currentFrameRect();
+    const sf::IntRect attackingFrame = m_attackingAnimation.currentFrameRect();
+
     // -------- STANDING ANIMATION --------
-    // CALCULATE FRAME SIZE
-    // A horizontal strip: Width / 8, Height = Full Height
-    const sf::Vector2u standingTextureSize = standingTexture.getSize();
-    m_standing_frameSize = sf::Vector2u(standingTextureSize.x / m_standing_numFrames, standingTextureSize.y);
-    // Set the first frame
-    m_standingSprite.setTextureRect(sf::IntRect({0, 0}, sf::Vector2<int>(m_standing_frameSize)));
-    m_standingSprite.setOrigin({static_cast<float>(m_standing_frameSize.x) / 2 + 5.f, static_cast<float>(m_standing_frameSize.y)}); //origin in the middle bottom with offset to match the body
+    m_standingSprite.setTextureRect(standingFrame);
+    m_standingSprite.setOrigin({static_cast<float>(standingFrame.size.x) / 2 + 5.f, static_cast<float>(standingFrame.size.y)}); //origin in the middle bottom with offset to match the body
 
     //     --------- WALKING ANIMATION --------
-    const sf::Vector2u walkingTextureSize = walkingTexture.getSize();
-    m_walking_frameSize = sf::Vector2u(walkingTextureSize.x / m_walking_numFrames, walkingTextureSize.y);
-    m_walkingSprite.setTextureRect(sf::IntRect({0, 0}, sf::Vector2<int>(m_walking_frameSize)));
-    m_walkingSprite.setOrigin({static_cast<float>(m_walking_frameSize.x) / 2 + 5.f, static_cast<float>(m_walking_frameSize.y)}); //origin in the middle bottom with offset to match the body
+    m_walkingSprite.setTextureRect(walkingFrame);
+    m_walkingSprite.setOrigin({static_cast<float>(walkingFrame.size.x) / 2 + 5.f, static_cast<float>(walkingFrame.size.y)}); //origin in the middle bottom with offset to match the body
 
     //    --------- ATTACKING ANIMATION --------
-    const sf::Vector2u attackingTextureSize = attackingTexture.getSize();
-    m_attacking_frameSize = sf::Vector2u(attackingTextureSize.x / m_attacking_numFrames, attackingTextureSize.y);
-    m_attackingSprite.setTextureRect(sf::IntRect({0, 0}, sf::Vector2<int>(m_attacking_frameSize)));
-    m_attackingSprite.setOrigin({static_cast<float>(m_standing_frameSize.x) / 2 + 5.f, static_cast<float>(m_attacking_frameSize.y)}); // We keep the same x from the standing/walking animation
+    m_attackingSprite.setTextureRect(attackingFrame);
+    m_attackingSprite.setOrigin({static_cast<float>(standingFrame.size.x) / 2 + 5.f, static_cast<float>(attackingFrame.size.y)}); // We keep the same x from the standing/walking animation
 }
 
 void Player::update(const sf::Time dt, const TerrainCollision& terrain) {
@@ -135,11 +127,7 @@ sf::Vector2f Player::movementLogic(const sf::Time dt, bool hasGroundSupport) {
         m_movement.x *= Constants::Player::SprintMultiplier;
         if (m_onGround)
             m_shiftFromGround = true;
-
-        // Also make the animation move faster
-        m_walking_animDuration = Constants::Player::Animation::WalkingAnimDuration / Constants::Player::SprintMultiplier;
-    } else
-        m_walking_animDuration = Constants::Player::Animation::WalkingAnimDuration;
+    }
 
     if (!m_inputState.shiftDown && m_onGround)
         m_shiftFromGround = false;
@@ -211,10 +199,9 @@ void Player::attack() {
         m_cooldownAttackClock.start();
         // Using restart() to be able to spam-attack
         m_activeAttackClock.restart();
-        // Restart the animation
-        m_attacking_elapsedTime = 0.f;
-        m_attacking_currentFrame = 0;
-        m_attackingSprite.setTextureRect(sf::IntRect({0, 0}, sf::Vector2<int>(m_attacking_frameSize)));
+        // Restart the animation, also when an attack is already playing (operator= starts it from the first frame)
+        m_activeAnimation = m_attackingAnimation;
+        m_attackingSprite.setTextureRect(m_activeAnimation.currentFrameRect());
 
         if (!m_onGround) {
             // We are already in the air when starting the attack
@@ -245,114 +232,38 @@ void Player::cancelAttack() {
 }
 
 void Player::animationLogic(const sf::Time dt) {
+    // Pick the animation of the current state: 0 - standing, 1 - walking, 2 - attack
+    unsigned int animationIndex = 1;
+    const Animation* stateAnimation = &m_walkingAnimation;
+    sf::Sprite* stateSprite = &m_walkingSprite;
     if (m_isAttacking) {
-        m_animationToDraw = 2;  // Tell which sprite to draw
-        attackingAnimation(dt); // Animation logic
-
-        // --- Reset the other animations so they start from the beginning next time
-        m_standing_elapsedTime = 0.f;
-        m_standing_currentFrame = 0;
-
-        m_walking_elapsedTime = 0.f;
-        m_walking_currentFrame = 0;
+        animationIndex = 2;
+        stateAnimation = &m_attackingAnimation;
+        stateSprite = &m_attackingSprite;
     } else if (!m_isMoving) {
-        m_animationToDraw = 0; // Tell which sprite to draw
-        standingAnimation(dt); // Animation logic
-
-        // --- Reset the other animations so they start from the beginning next time
-        m_walking_elapsedTime = 0.f;
-        m_walking_currentFrame = 0;
-
-        m_attacking_elapsedTime = 0.f;
-        m_attacking_currentFrame = 0;
-    } else {
-        m_animationToDraw = 1; // Tell which sprite to draw
-        walkingAnimation(dt);  // Animation logic
-
-        // --- Reset the other animations so they start form the beginning next time
-        m_standing_elapsedTime = 0.f;
-        m_standing_currentFrame = 0;
-
-        m_attacking_elapsedTime = 0.f;
-        m_attacking_currentFrame = 0;
+        animationIndex = 0;
+        stateAnimation = &m_standingAnimation;
+        stateSprite = &m_standingSprite;
     }
-}
 
-void Player::standingAnimation(const sf::Time dt) {
-    m_standing_elapsedTime += dt.asSeconds();
-
-    // If enough time passed, switch to next frame
-    if (m_standing_elapsedTime >= m_standing_animDuration) {
-        m_standing_elapsedTime = 0.f; // Reset timer
-        m_standing_currentFrame++;    // Next frame
-
-        // Loop back to 0 if we exceed the count (0 -> 1 -> ... -> 7 -> 0)
-        if (m_standing_currentFrame >= m_standing_numFrames)
-            m_standing_currentFrame = 0;
-
-        // Calculating the coordinate for every frame;
-        // Frame x starts at currentFrame * width (80 here)
-        const long long leftAux = m_standing_currentFrame * m_standing_frameSize.x;
-        int left = static_cast<int>(leftAux); // weird conversion
-
-        int top = 0; // Top is always 0 for a single row spritesheet
-
-        m_standingSprite.setTextureRect(sf::IntRect({left, top}, sf::Vector2<int>(m_standing_frameSize)));
+    // On a state change the new animation starts from its first frame (operator= restarts it)
+    if (animationIndex != m_animationToDraw) {
+        m_animationToDraw = animationIndex; // Tell which sprite to draw
+        m_activeAnimation = *stateAnimation;
+        (*stateSprite).setTextureRect(m_activeAnimation.currentFrameRect());
     }
+
+    // Sprinting also makes the walking animation play faster
+    sf::Time animationTime = dt;
+    if (animationIndex == 1 && m_inputState.shiftDown)
+        animationTime = dt * Constants::Player::SprintMultiplier;
+
+    if (m_activeAnimation.advance(animationTime))
+        (*stateSprite).setTextureRect(m_activeAnimation.currentFrameRect());
 
     // --- SYNC POSITION ---
     // Snap sprite to hitbox
-    m_standingSprite.setPosition({
-        m_shape.getPosition().x + Constants::Player::HitboxWidth / 2,
-        m_shape.getPosition().y + Constants::Player::HitboxHeight // bottom center of the hitbox
-    });
-}
-
-void Player::walkingAnimation(const sf::Time dt) {
-    m_walking_elapsedTime += dt.asSeconds();
-
-    // If enough time has passed, switch to next frame
-    if (m_walking_elapsedTime >= m_walking_animDuration) {
-        m_walking_elapsedTime = 0.f; // reset timer
-        m_walking_currentFrame++;    // next frame
-
-        if (m_walking_currentFrame >= m_walking_numFrames)
-            m_walking_currentFrame = 0;
-
-        const long long leftAux = m_walking_currentFrame * m_walking_frameSize.x;
-        int left = static_cast<int>(leftAux);
-        int top = 0;
-        m_walkingSprite.setTextureRect(sf::IntRect({left, top}, sf::Vector2<int>(m_walking_frameSize)));
-    }
-
-    // --- SYNC POSITION ---
-    // Snap sprite to hitbox
-    m_walkingSprite.setPosition({
-        m_shape.getPosition().x + Constants::Player::HitboxWidth / 2,
-        m_shape.getPosition().y + Constants::Player::HitboxHeight // bottom center of the hitbox
-    });
-}
-
-void Player::attackingAnimation(const sf::Time dt) {
-    m_attacking_elapsedTime += dt.asSeconds();
-
-    // If enough time has passed, switch to next frame
-    if (m_attacking_elapsedTime >= m_attacking_animDuration) {
-        m_attacking_elapsedTime = 0.f; // reset timer
-        m_attacking_currentFrame++;    // next frame
-
-        if (m_attacking_currentFrame >= m_attacking_numFrames)
-            m_attacking_currentFrame = 0;
-
-        const long long leftAux = m_attacking_currentFrame * m_attacking_frameSize.x;
-        int left = static_cast<int>(leftAux);
-        int top = 0;
-        m_attackingSprite.setTextureRect(sf::IntRect({left, top}, sf::Vector2<int>(m_attacking_frameSize)));
-    }
-
-    // --- SYNC POSITION ---
-    // Snap sprite to hitbox
-    m_attackingSprite.setPosition({
+    (*stateSprite).setPosition({
         m_shape.getPosition().x + Constants::Player::HitboxWidth / 2,
         m_shape.getPosition().y + Constants::Player::HitboxHeight // bottom center of the hitbox
     });
@@ -385,9 +296,8 @@ void Player::respawn(const sf::Vector2f& position) {
 
     // Death happens after animationLogic() has already picked this frame's sprite, so pick the standing pose here
     m_animationToDraw = 0;
-    m_standing_currentFrame = 0;
-    m_standing_elapsedTime = 0.f;
-    m_standingSprite.setTextureRect(sf::IntRect({0, 0}, sf::Vector2<int>(m_standing_frameSize)));
+    m_activeAnimation = m_standingAnimation;
+    m_standingSprite.setTextureRect(m_activeAnimation.currentFrameRect());
 
     setPosition(position);
 }
@@ -438,5 +348,5 @@ void Player::print(std::ostream& os) const {
     const char* animationName = m_animationToDraw == 0 ? "standing" : (m_animationToDraw == 1 ? "walking" : "attacking");
     os << "Player{";
     Entity::print(os);
-    os << ", frozen " << (m_isFrozen ? "yes" : "no") << ", dash attack " << (m_dashAttack ? "yes" : "no") << ", dash used " << (m_hasDashed ? "yes" : "no") << ", animation " << animationName << "}";
+    os << ", frozen " << (m_isFrozen ? "yes" : "no") << ", dash attack " << (m_dashAttack ? "yes" : "no") << ", dash used " << (m_hasDashed ? "yes" : "no") << ", animation " << animationName << " " << m_activeAnimation << "}";
 }

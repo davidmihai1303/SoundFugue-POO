@@ -128,6 +128,7 @@ target_sources(${MAIN_LIBRARY_NAME}
         src/entities/enemies/Spider.cpp
         src/entities/Note.cpp
         src/graphics/TextureHolder.cpp
+        src/graphics/Animation.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )
